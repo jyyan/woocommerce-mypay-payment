@@ -19,7 +19,7 @@ require_once(ABSPATH . 'wp-admin/includes/file.php');
 /**
  * Required minimums and constants
  */
-define('WC_MYPAY_VERSION', '1.2.201023');
+define('WC_MYPAY_VERSION', '1.2.20201023');
 define('WC_MYPAY_MIN_PHP_VER', '7.0.0');
 define('WC_MYPAY_MIN_WC_VER', '3.5.0');
 define('WC_MYPAY_MAIN_FILE', __FILE__);
