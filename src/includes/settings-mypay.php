@@ -70,5 +70,18 @@ return apply_filters('wc_mypay_payment_settings',
       ),
       'desc_tip' => true,
     ),
+    // ref :
+    // 1. https://docs.woocommerce.com/document/payment-gateway-api/
+    // 2. https://docs.woocommerce.com/document/wc_api-the-woocommerce-api-callback/
+    'mypay_payment_callback_url' => array(
+      'title' => __('Payment Callback URL', 'mypay'),
+      'type' => 'textarea',
+      'custom_attributes' => [
+        'readonly' => 'readonly',
+      ],
+      'style' =>'width:100%;',
+      'description' => __('Payment Callback URL, Please use the following payment callback url in MyPay payment notify setting.', 'mypay'),
+      'desc_tip' => true,
+    ),
   )
 );

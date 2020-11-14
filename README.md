@@ -49,7 +49,7 @@
 
 ## 系統需求
 
-* PHP version **7.0** or greater, **php_openssl** module
+* PHP version **7.2** or greater, **php_openssl** module
 * MySQL version **5.5** or greater
 
 ## 自動安裝 

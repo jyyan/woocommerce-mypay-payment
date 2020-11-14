@@ -23,6 +23,9 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     # Load the administrator settings
     $this->init_settings();
 
+    // assign readonly value mypay_payment_callback_url
+    $this->settings['mypay_payment_callback_url'] = add_query_arg('wc-api', 'wc_gateway_' . $this->id, home_url('/') .'?notify=order');
+
     $this->title = $this->get_option('title');
     $this->description = $this->get_option('description');
     $this->mypay_test_mode = $this->get_option('mypay_test_mode');
@@ -37,9 +40,12 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
 
     # Register a action to process the callback
+    // ref :
+    // 1. https://docs.woocommerce.com/document/payment-gateway-api/
+    // 2. https://docs.woocommerce.com/document/wc_api-the-woocommerce-api-callback/
     add_action('woocommerce_api_wc_gateway_' . $this->id, array($this, 'receive_response'));
 
-    add_action('woocommerce_thankyou_mypay', array($this, 'thankyou_page'));
+    add_action('woocommerce_thankyou_' . $this->id, array($this, 'thankyou_page'));
   }
 
   /**
@@ -146,7 +152,9 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     }
     //echo "幣別：". $order_data['currency']. "<br />";
     $payment['cost'] = $order_data['total']; //總金額
-    $payment['user_id'] = "phper";
+
+    // FIX: support test mode with DoSuccess
+    $payment['user_id'] = $this->mypay_test_mode === 'no' ? ($email ?? 'guest') : 'DoSuccess';
     $payment['order_id'] = $order_id;
     $payment['discount_total'] = $order_data['discount_total']; //echo "折扣金額
     $payment['user_real_name'] = $name;
@@ -353,6 +361,8 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
   public function receive_response()
   {
     date_default_timezone_set("Asia/Taipei");
+
+    // for 即時交易通知 webhook , 非即時交易通知 webhook
     if (isset($_GET['notify']) && $_GET['notify'] == "order") {
       //mypay 背景通知所在
       $ip = $this->get_client_ip();
@@ -368,7 +378,9 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
       $res_json = json_encode($_POST);
       if (isset($_POST['order_id'])) {
         $order = wc_get_order($_POST['order_id']);
-        if (isset($order->id) && isset($_POST['prc'])) {
+        if ($order !== false &&
+          !empty($order->get_id()) &&
+          isset($_POST['prc'])) {
           $order_data = $order->get_data();
           $status = $this->mypay_prc_transfer($_POST['prc']);
           $order->update_status($status);
@@ -377,6 +389,7 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
       echo "8888";
       exit;
     }
+
     // 次特店商務代號
     $store_uid = $this->mypay_merchant_id;
     // 次特店金鑰
@@ -388,6 +401,10 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
       $service_url = "https://mypay.tw/api/init";
     }
 
+
+    // check payment return status
+    // returl=failure
+    // returl=success
     if (isset($_GET['returl'])) {
       $order_id = $_GET['order_id'];
       $order = new WC_Order($order_id);
@@ -396,6 +413,7 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
         $res_json = json_decode($notes[1]['note_content'], true);
         $payment = $this->set_query_payment($res_json);
 
+        // 向 MyPay 查詢訂單狀態，並更新訂單資訊
         // 送出欄位
         $post_data = array();
         $post_data['store_uid'] = $store_uid;
@@ -413,6 +431,10 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
           $order->update_status($status);
         }
       }
+
+      // TODO: display info
+      // check returl=failure
+      // check returl=success
       $this->thankyou_page($order_id);
       exit;
     }

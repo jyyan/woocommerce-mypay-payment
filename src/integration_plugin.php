@@ -6,9 +6,19 @@
  * Plugin Name: WooCommerce MYPay Payment
  * Plugin URI: https://www.mypay.com.tw
  * Description: MYPay Integration Payment Gateway for WooCommerce
- * Version: 1.2
+ * Version: 1.2.20201114
+ * Requires at least: 5.3
+ * Requires PHP:      7.2
+ * License:           GPL v2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       woocomerce-mypay-payment
  * Author: MYPay Wisdtek FinTech Service Co., Ltd.
  * Author URI: https://www.mypay.com.tw
+ *
+ * @class       Mypay_Payment
+ * @extends     WC_Mypay_Payment
+ * @author  MYPay Wisdtek FinTech Service Co., Ltd.
+ * @author  Luke Yan, since v1.2.20201023
  */
 
 if (!defined('ABSPATH')) {
@@ -19,8 +29,8 @@ require_once(ABSPATH . 'wp-admin/includes/file.php');
 /**
  * Required minimums and constants
  */
-define('WC_MYPAY_VERSION', '1.2.20201023');
-define('WC_MYPAY_MIN_PHP_VER', '7.0.0');
+define('WC_MYPAY_VERSION', '1.2');
+define('WC_MYPAY_MIN_PHP_VER', '7.2.0');
 define('WC_MYPAY_MIN_WC_VER', '3.5.0');
 define('WC_MYPAY_MAIN_FILE', __FILE__);
 define('WC_MYPAY_PLUGIN_URL', untrailingslashit(plugins_url(basename(plugin_dir_path(__FILE__)), basename(__FILE__))));
@@ -39,7 +49,7 @@ if (!class_exists('WC_Mypay_Payment')) {
     /**
      * Returns the *Singleton* instance of this class.
      *
-     * @return Singleton The *Singleton* instance.
+     * @return WC_Mypay_Payment The *Singleton* instance.
      */
     public static function get_instance()
     {
@@ -255,6 +265,7 @@ if (!class_exists('WC_Mypay_Payment')) {
                 var e = document.getElementById("shipping_option");
                 var shipping = e.options[e.selectedIndex].value;
                 var payment = document.getElementsByName('payment_method');
+                var checkclass = 0;
 
                 if (
                     shipping == "HILIFE_Collection" ||
