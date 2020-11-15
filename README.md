@@ -58,4 +58,4 @@
 3. 點擊 "安裝" 即可進行安裝。
 
 ## 手動安裝 
-詳細說明請參閱 [高鉅科技金流外掛套件安裝導引文件] - (待補充更新)
+詳細說明請參閱 [高鉅科技金流外掛套件安裝導引文件](https://github.com/jyyan/woocommerce-mypay-payment/blob/master/DOC/mypay-woocommerce-payment-gateway-install.md) , [PDF](https://github.com/jyyan/woocommerce-mypay-payment/blob/master/DOC/mypay-woocommerce-payment-gateway-install.pdf)
