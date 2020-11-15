@@ -4,7 +4,7 @@ Tags: ecommerce, e-commerce, store, sales, sell, shop, cart, checkout, payment, 
 Requires at least: wordpress 5.3, WooCommerce 3.5
 Tested up to: wordpress 5.5.1, WooCommerce 4.6.1
 Requires PHP: 7.2 or later
-Stable tag: 1.2.20201023
+Stable tag: 1.2.20201115
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -93,3 +93,7 @@ v1.2.20201114
 1. FIX: 支援：新版本測試區，於測試模式使用信用卡測試交易時 UserID 限制
 2. UPDATE: wordpress / php 版本需求顯示
 3. ADD: 顯示『非即時交易、即時交易』 webhook API notify URL
+
+v1.2.20201115
+1. UPDATE: DOC
+2. FIX: package path typo
