@@ -97,3 +97,6 @@ v1.2.20201114
 v1.2.20201115
 1. UPDATE: DOC
 2. FIX: package path typo
+
+v1.2.20210102
+1. FIX: 運費、折扣 issue

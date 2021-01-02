@@ -156,7 +156,13 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     // FIX: support test mode with DoSuccess
     $payment['user_id'] = $this->mypay_test_mode === 'no' ? ($email ?? 'guest') : 'DoSuccess';
     $payment['order_id'] = $order_id;
-    $payment['discount_total'] = $order_data['discount_total']; //echo "折扣金額
+    // 折扣
+    // echo "折扣金額" . $order_data["discount_total"];
+    $payment['discount_total'] = $order_data["discount_total"] !== 0 ? "-{$order_data['discount_total']}" : '0';
+    // 運費
+    // echo "運費" . $order_data["shipping_total"];
+    $payment['shipping_fee'] = $order_data["shipping_total"] !== 0 ? $order_data['shipping_total'] : '0';
+
     $payment['user_real_name'] = $name;
     $payment['user_email'] = $email;
     $payment['user_cellphone'] = $phone;
@@ -168,13 +174,17 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     foreach ($items as $item_idx => $item) {
       $item_data = $item->get_data();
       $product = $item->get_product();
+      $item_price = $product->get_price(); //商品單價
+      $item_sub_total = $item_price * $item_data['quantity']; // 商品小計
+
       $payment['i_' . $idx_count . '_id'] = $item_data['product_id'];//商品ID
       $payment['i_' . $idx_count . '_name'] = $item_data['name'];    //商品名稱
-      $payment['i_' . $idx_count . '_cost'] = $product->get_price(); //商品單價
+      $payment['i_' . $idx_count . '_cost'] = $item_price; //商品單價
       $payment['i_' . $idx_count . '_amount'] = $item_data['quantity'];//商品數量
-      $payment['i_' . $idx_count . '_total'] = $item_data['total'];  //商品小計
+      $payment['i_' . $idx_count . '_total'] = $item_sub_total;  //商品小計
       ++$idx_count;
     }
+
     return $payment;
   }
 
@@ -353,6 +363,29 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
         break;
     }
     return $status;
+  }
+
+  /**
+   * mypay 的狀態碼轉換成WooCommerce狀態
+   */
+  public function get_order_status($status)
+  {
+    $msg = "訂單處理中";
+    switch ($status) {
+      case "completed":
+        $msg = "訂單已付款";
+        break;
+      case "processing":
+        $msg = "訂單處理中";
+        break;
+      case "failed":
+        $msg = "訂單付款失敗";
+        break;
+      case "cancelled":
+        $msg = "訂單已取消";
+        break;
+    }
+    return $msg;
   }
 
   /**
@@ -666,7 +699,18 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     get_header();
 
     $order_details = $order->get_items();
+
+    // 1. 顯示付款結果：成功、失敗
+
+    // TODO:
+    // 2. 付款成功：顯示『感謝詞』
+    // 3. 付款失敗：顯示『重新付款』按鈕
+    $msg = $this->get_order_status($order_data["status"]);
+
+
+    // echo "<p>". json_encode($order_data) ."</p>";
     echo "<div id='primary' class='content-area'>";
+    echo "<h2>{$msg}</h2>";
     echo "<table>";
     echo "<thead>";
     echo "<tr>";
@@ -679,11 +723,13 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     foreach ($order_details as $detail) {
       $detail_data = $detail->get_data();
       $product = $detail->get_product();
+      $item_price = $product->get_price(); //商品單價
+      $item_sub_total = $item_price * $detail['quantity']; // 商品小計
       echo "<tr>";
       echo "<td>" . $detail_data['name'] . "</td>";
-      echo "<td>" . $product->get_price() . "</td>";
+      echo "<td>" . $item_price . "</td>";
       echo "<td>" . $detail_data['quantity'] . "</td>";
-      echo "<td>" . $detail_data['total'] . "</td>";
+      echo "<td>" . $item_sub_total . "</td>";
       echo "</tr>";
     }
     echo "</table>";
@@ -691,6 +737,10 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     echo "<tr>";
     echo "<td>折扣 : </td>";
     echo "<td>" . $order_data['discount_total'] . "</td>";
+    echo "</tr>";
+    echo "<tr>";
+    echo "<td>運費: </td>";
+    echo "<td>" . $order_data['shipping_total'] . "</td>";
     echo "</tr>";
     echo "<tr>";
     echo "<td>總額 : </td>";

@@ -6,7 +6,7 @@
  * Plugin Name: WooCommerce MYPay Payment
  * Plugin URI: https://www.mypay.com.tw
  * Description: MYPay Integration Payment Gateway for WooCommerce
- * Version: 1.2.20201115
+ * Version: 1.2.20210102
  * Requires at least: 5.3
  * Requires PHP:      7.2
  * License:           GPL v2 or later
