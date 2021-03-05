@@ -24,7 +24,7 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     $this->init_settings();
 
     // assign readonly value mypay_payment_callback_url
-    $this->settings['mypay_payment_callback_url'] = add_query_arg('wc-api', 'wc_gateway_' . $this->id, home_url('/') .'?notify=order');
+    $this->settings['mypay_payment_callback_url'] = add_query_arg('wc-api', 'wc_gateway_' . $this->id, home_url('/') . '?notify=order');
 
     $this->title = $this->get_option('title');
     $this->description = $this->get_option('description');
@@ -132,12 +132,15 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
       'order_id' => $order_id,
     ), home_url('/'));
 
+
     //找出訂單資訊
     $order_data = $order->get_data();
     $name = "";
     $phone = "";
     $email = "";
-    //$address = "";
+    $postcode = $order->get_shipping_postcode() ?? null;
+    $address = "{$order->get_shipping_state()} {$order->get_shipping_city()} {$order->get_shipping_address_1()} {$order->get_shipping_address_2()}";
+
     if (isset($order_data['billing']['first_name'])) {
       $name = $order_data['billing']['last_name'] . $order_data['billing']['first_name'];
     }
@@ -147,9 +150,7 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     if (isset($order_data['billing']['email'])) {
       $email = $order_data['billing']['email'];
     }
-    if (isset($order_data['billing']['city'])) {
-      //$address = $order_data['billing']['state']. " ". $order_data['billing']['city']. " ". $order_data['billing']['address_1'];
-    }
+
     //echo "幣別：". $order_data['currency']. "<br />";
     $payment['cost'] = $order_data['total']; //總金額
 
@@ -183,6 +184,24 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
       $payment['i_' . $idx_count . '_amount'] = $item_data['quantity'];//商品數量
       $payment['i_' . $idx_count . '_total'] = $item_sub_total;  //商品小計
       ++$idx_count;
+    }
+
+    if ($choose_payment === "AFP") {
+      // 加入『後付款』審核必要資訊
+      $payment['shipping_info'] = [
+        "shipment_type" => 2,
+        "company_name" => null,
+        "department_name" => null,
+        "name" => $name,
+        "cvs" => null,
+        "cvs_store" => null,
+        "cvs_store_name" => null,
+        "zip_code" => $postcode,
+        "ship_address" => $address,
+        "tel" => $phone
+      ];
+      $order->add_order_note(json_encode($payment['shipping_info']));
+      $order->save();
     }
 
     return $payment;
@@ -232,7 +251,7 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     $iv = random_bytes(16);
     $padding = 16 - (strlen($data) % 16);
     $data .= str_repeat(chr($padding), $padding);
-    $data = openssl_encrypt($data, 'AES-256-CBC', $key, OPENSSL_RAW_DATA|OPENSSL_ZERO_PADDING, $iv);
+    $data = openssl_encrypt($data, 'AES-256-CBC', $key, OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING, $iv);
     $data = base64_encode($iv . $data);
     return $data;
   }
@@ -343,20 +362,59 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
    */
   public function mypay_prc_transfer($prc)
   {
+//    DOC Ref:  https://doc.usecase.cc/Payment/Store/#13d83df4ff
+
     $status = "wc-pending";
     switch ($prc) {
+      case "100":
+//      100 資料錯誤	MYPAYLINK收到資料，但是格式或資料錯誤
+        $status = "wc-failed";
+        break;
+      case "220":
+//      220 取消成功	如申請取消，取消訂單狀態為取消成功
+        $status = "wc-cancelled";
+      case "230":
+//      230 退款成功	如申請退款，申請退款成功時狀態。
+        $status = "wc-refunded";
+        break;
+      case "600":
+//      600	結帳完成	視為付款完成，此狀態為上游服務商確認訂單後的狀態，表示該筆訂單會撥款
+//      透過MYPAY主動查詢或每日對帳機制
+//      操作訂單功能內發動查詢功能
       case "250":
+//      250	付款成功	此次交易，消費者付款成功
         $status = "wc-completed";
         break;
+      case "200":
+//      200 資料正確	MYPAYLINK收到正確資料，會接續下一步交易
       case "260":
+//      260	交易成功 尚未付款完成
+      case "265":
+//      265	訂單綁定
       case "270":
+//      270	交易成功尚未付款完成
       case "280":
+//      280	交易成功尚未付款完成
         $status = "wc-processing";
         break;
+      case "282":
+//      282	訂單成立待『後付款』審核確認，尚未付款完成
+        $status = "wc-on-hold";
+      case "284":
+//      284	訂單成立『後付款』待請款，尚未付款完成
+//      視為完成訂單可出貨，請款請至 MyPay 金流後台發動『後付款』請款作業
+        $status = "wc-completed";
+        break;
       case "300":
+//        300	交易失敗	金流服務商回傳交易失敗或該筆交易超過風險控管限制規則
       case "380":
+//        380	逾期交易	超商代碼或虛擬帳號交易，超過系統設定繳費期限
       case "400":
+//        400	系統錯誤訊息	若MYPAY LINK或上游服務商系統異常時
         $status = "wc-failed";
+        break;
+      case "A0001":
+//        A0001	交易待確認	MYPAY LINK與金流服務商發生連線異常，待查詢後確認結果，會主動再次回傳交易結果
         break;
       case "A0002":
         $status = "wc-cancelled";
@@ -373,7 +431,7 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     $msg = "訂單處理中";
     switch ($status) {
       case "completed":
-        $msg = "訂單已付款";
+        $msg = "訂單已完成";
         break;
       case "processing":
         $msg = "訂單處理中";
@@ -502,6 +560,7 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
    */
   private function get_payment_desc($payment_name)
   {
+    // 前台結帳頁顯示的敘述
     $payment_desc = array(
       'All' => __('All', 'mypay'),
       'CREDITCARD' => __('CREDITCARD', 'mypay'),
@@ -523,6 +582,7 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
       'QQH5' => __('QQH5', 'mypay'),
       'WECHATH5' => __('WECHATH5', 'mypay'),
       'APPLEPAY' => __('APPLEPAY', 'mypay'),
+      'AFP' => __('AFTERPAY', 'mypay'),
     );
 
     return $payment_desc[$payment_name];
