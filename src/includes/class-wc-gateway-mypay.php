@@ -317,6 +317,10 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
       $order->save();
       $this->jump_page($res_json);
     } else {
+      // 儲存交易錯誤訊息至訂單中
+      $order->add_order_note($result);
+      $order->add_order_note("交易發生錯誤！請確認以下交易請求錯誤訊息：");
+      $order->save();
       throw new Exception($res_json['msg']);
     }
     exit;

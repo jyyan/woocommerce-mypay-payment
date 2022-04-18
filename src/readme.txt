@@ -4,7 +4,7 @@ Tags: ecommerce, e-commerce, store, sales, sell, shop, cart, checkout, payment, 
 Requires at least: wordpress 5.3, WooCommerce 3.5
 Tested up to: wordpress 5.5.1, WooCommerce 4.6.1
 Requires PHP: 7.2 or later
-Stable tag: 1.2.20220321
+Stable tag: 1.2.20220418
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
