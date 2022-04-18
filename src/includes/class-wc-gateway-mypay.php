@@ -582,7 +582,21 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
       'QQH5' => __('QQH5', 'mypay'),
       'WECHATH5' => __('WECHATH5', 'mypay'),
       'APPLEPAY' => __('APPLEPAY', 'mypay'),
+      'GOOGLEPAY' => __('GOOGLEPAY', 'mypay'),
+      'EACH' => __('EACH', 'mypay'),
+      'C_INSTALLMENT' => __('C_INSTALLMENT', 'mypay'),
+      'C_REDEEM' => __('C_REDEEM', 'mypay'),
+      'CARDLESS' => __('CARDLESS', 'mypay'),
+      'PION' => __('PION', 'mypay'),
+      'JKOOF' => __('JKOOF', 'mypay'),
+      'AMEX' => __('AMEX', 'mypay'),
+      'JKOON' => __('JKOON', 'mypay'),
+      'JKOOF' => __('JKOOF', 'mypay'),
+      'ALIPAYOFF' => __('ALIPAYOFF', 'mypay'),
       'AFP' => __('AFTERPAY', 'mypay'),
+      'EASYWALLETON' => __('EASYWALLETON', 'mypay'),
+      'EASYWALLETOFF' => __('EASYWALLETOFF', 'mypay'),
+      'BARCODE' => __('BARCODE', 'mypay'),
     );
 
     return $payment_desc[$payment_name];

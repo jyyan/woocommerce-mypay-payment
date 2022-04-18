@@ -142,6 +142,48 @@ msgstr "微信支付H5"
 msgid "APPLEPAY"
 msgstr "Apple Pay"
 
+msgid "GOOGLEPAY"
+msgstr "Google Pay"
+
+msgid "EACH"
+msgstr "eACH交易"
+
+msgid "C_INSTALLMENT"
+msgstr "信用卡分期"
+
+msgid "C_REDEEM"
+msgstr "信用卡紅利"
+
+msgid "CARDLESS"
+msgstr "無卡分期(由資融公司提供分期服務)"
+
+msgid "PION"
+msgstr "Pi 拍錢包線上付款(消費者主掃)"
+
+msgid "PIOFF"
+msgstr "Pi 拍錢包線下付款(消費者被掃)"
+
+msgid "AMEX"
+msgstr "美國運通"
+
+msgid "JKOON"
+msgstr "街口支付線上付款(消費者主掃)"
+
+msgid "JKOOF"
+msgstr "街口支付線下付款(消費者被掃)"
+
+msgid "ALIPAYOFF"
+msgstr "支付寶線下"
+
+msgid "EASYWALLETON"
+msgstr "悠遊付線上"
+
+msgid "EASYWALLETOFF"
+msgstr "悠遊付線下"
+
+msgid "BARCODE"
+msgstr "超商條碼繳費"
+
 msgid "AFTERPAY"
 msgstr "AFTERPAY 後付款"
 
@@ -171,9 +213,6 @@ msgstr "ATM"
 
 msgid "CVS"
 msgstr "超商代碼"
-
-msgid "BARCODE"
-msgstr "超商條碼"
 
 msgid "Alipay"
 msgstr "支付寶"
