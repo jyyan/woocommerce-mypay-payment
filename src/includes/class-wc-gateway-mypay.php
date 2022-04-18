@@ -155,7 +155,9 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     $payment['cost'] = $order_data['total']; //總金額
 
     // FIX: support test mode with DoSuccess
-    $payment['user_id'] = $this->mypay_test_mode === 'no' ? ($email ?? 'guest') : 'DoSuccess';
+    // $payment['user_id'] = $this->mypay_test_mode === 'no' ? ($email ?? 'guest') : 'DoSuccess';
+    // 20220321 FIX: remove DoSuccess
+    $payment['user_id'] = $email ?? 'guest';
     $payment['order_id'] = $order_id;
     // 折扣
     // echo "折扣金額" . $order_data["discount_total"];

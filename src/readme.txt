@@ -4,7 +4,7 @@ Tags: ecommerce, e-commerce, store, sales, sell, shop, cart, checkout, payment, 
 Requires at least: wordpress 5.3, WooCommerce 3.5
 Tested up to: wordpress 5.5.1, WooCommerce 4.6.1
 Requires PHP: 7.2 or later
-Stable tag: 1.2.20201115
+Stable tag: 1.2.20220321
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -43,8 +43,8 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 = 聯絡我們 =
   高鉅技術客服信箱: techsupport@mypay.com.tw
-  
-  
+
+
 == Installation ==
 
 = 系統需求 =
@@ -65,7 +65,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 == Changelog ==
 
-v1.1.0901 
+v1.1.0901
 Official release
 
 v1.1.0911
@@ -104,3 +104,6 @@ v1.2.20210102
 v1.2.20210305
 1. ADD: 『後付款』支付方式
 2. UPDATE: PO/MO 語系檔
+
+v1.2.20220321
+1. FIX: 於 test mode 模式中，MyPay API 不再支援 DoSuccess 操作
