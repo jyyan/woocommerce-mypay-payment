@@ -161,7 +161,7 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     $payment['order_id'] = $order_id;
     // 折扣
     // echo "折扣金額" . $order_data["discount_total"];
-    $payment['discount_total'] = $order_data["discount_total"] !== 0 ? "-{$order_data['discount_total']}" : '0';
+    $payment['discount'] = $order_data["discount_total"] !== 0 ? "-{$order_data['discount_total']}" : '0';
     // 運費
     // echo "運費" . $order_data["shipping_total"];
     $payment['shipping_fee'] = $order_data["shipping_total"] !== 0 ? $order_data['shipping_total'] : '0';
