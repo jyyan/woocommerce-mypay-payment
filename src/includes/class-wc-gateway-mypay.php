@@ -154,19 +154,16 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     //echo "幣別：". $order_data['currency']. "<br />";
     $subTotAmt = 0; // 驗算總金額
     $totalAmt = intval($order_data['total']); // 結帳金額
+    $discount = intval($order_data['discount_total']) * -1; // 折扣金額
+    $shippingFee = intval($order_data["shipping_total"]); //運費
 
-    // FIX: support test mode with DoSuccess
-    // $payment['user_id'] = $this->mypay_test_mode === 'no' ? ($email ?? 'guest') : 'DoSuccess';
-    // 20220321 FIX: remove DoSuccess
     $payment['user_id'] = $email ?? 'guest';
     $payment['order_id'] = $order_id;
-
     $payment['user_real_name'] = $name;
     $payment['user_email'] = $email;
     $payment['user_cellphone'] = $phone;
     $items = $order->get_items();
 
-    $payment['item'] = count($items);;
 
     $idx_count = 0;
     foreach ($items as $item_idx => $item) {
@@ -177,27 +174,37 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
 
       $payment['i_' . $idx_count . '_id'] = $item_data['product_id'];//商品ID
       $payment['i_' . $idx_count . '_name'] = $item_data['name'];    //商品名稱
-      $payment['i_' . $idx_count . '_cost'] = $item_price; //商品單價
-      $payment['i_' . $idx_count . '_amount'] = $item_data['quantity'];//商品數量
+      $payment['i_' . $idx_count . '_cost'] = intval($item_price); //商品單價
+      $payment['i_' . $idx_count . '_amount'] = intval($item_data['quantity']);//商品數量
       $payment['i_' . $idx_count . '_total'] = $item_sub_total;  //商品小計
       $subTotAmt += $item_sub_total;  // 驗算請款金額
+//      echo $payment['i_' . $idx_count . '_id'] .':'. $payment['i_' . $idx_count . '_name'] .':'. $payment['i_' . $idx_count . '_cost'] .':'. $payment['i_' . $idx_count . '_amount'] .':'. $payment['i_' . $idx_count . '_total'] .'<br/>';
       ++$idx_count;
     }
-    // 運費
-    // echo "運費" . $order_data["shipping_total"];
-    $payment['shipping_fee'] = $order_data["shipping_total"] !== 0 ? $order_data['shipping_total'] : '0';
-    $subTotAmt += intval($order_data['shipping_total']); // 驗算請款金額 + 運費
-    // 折扣
     // FIX: #3 重新計算折扣金額
-    // echo "折扣金額" . $order_data["discount_total"];
-    if ($subTotAmt < $totalAmt) {
-      $payment['discount'] = $subTotAmt - $totalAmt; //折扣金額
-      $payment['cost'] = $subTotAmt; // 請款總金額
-    } else {
-      $payment['discount'] = 0; //折扣金額
-      $payment['cost'] = $subTotAmt; // 請款總金額
+    // 加入費用或額外折扣
+    $item_discount_fee = $totalAmt - ($subTotAmt + $discount + $shippingFee);
+    if ($item_discount_fee !== 0) {
+      // 加入費用 or 加入額外折扣
+      $payment['i_' . $idx_count . '_id'] = 'COUPON_FEE';//商品ID
+      $payment['i_' . $idx_count . '_name'] =  $item_discount_fee > 0 ? '交易費用' : '商品折扣';    //商品名稱
+      $payment['i_' . $idx_count . '_cost'] = $item_discount_fee; //商品單價
+      $payment['i_' . $idx_count . '_amount'] = 1;//商品數量
+      $payment['i_' . $idx_count . '_total'] = $item_discount_fee;  //商品小計
+//      echo $payment['i_' . $idx_count . '_id'] .':'. $payment['i_' . $idx_count . '_name'] .':'. $payment['i_' . $idx_count . '_cost'] .':'. $payment['i_' . $idx_count . '_amount'] .':'. $payment['i_' . $idx_count . '_total'] .'<br/>';
+      ++$idx_count;
     }
+    // echo "購物車合計：".$subTotAmt. "<br />";
+    // echo "+費用/額外折扣：".$item_discount_fee. "<br />";
+    // echo "+運費" . $shippingFee . '<br/>';
+    // echo "+折扣金額" . $discount . '<br/>';
+    // echo "=總計：". $totalAmt . "<br />";
+    $payment['item'] = $idx_count; // 交易明細品項數量
+    $payment['shipping_fee'] = $shippingFee; // 運費
+    $payment['discount'] = $discount; //折扣金額
+    $payment['cost'] = $totalAmt; // 請款總金額
 
+    $order->add_order_note('MYPAY金流交易資訊:'.json_encode($payment));
     if ($choose_payment === "AFP") {
       // 加入『後付款』審核必要資訊
       $payment['shipping_info'] = [
@@ -212,10 +219,10 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
         "ship_address" => $address,
         "tel" => $phone
       ];
-      $order->add_order_note(json_encode($payment['shipping_info']));
-      $order->save();
+      $order->add_order_note('『後付款』審核資訊:'.json_encode($payment['shipping_info']));
     }
-
+    $order->save();
+    // die();
     return $payment;
   }
 
