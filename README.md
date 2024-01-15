@@ -59,3 +59,7 @@
 
 ## 手動安裝
 詳細說明請參閱 [高鉅科技金流外掛套件安裝導引文件](https://github.com/jyyan/woocommerce-mypay-payment/blob/master/DOC/mypay-woocommerce-payment-gateway-install.md) , [PDF](https://github.com/jyyan/woocommerce-mypay-payment/blob/master/DOC/mypay-woocommerce-payment-gateway-install.pdf)
+
+## 參考文件
+1. [PAYPAGE API DOC](https://doc.usecase.cc/Payment/Store/)
+2. [IAP API DOC](https://doc.usecase.cc/IAP-V2/Store/) 
