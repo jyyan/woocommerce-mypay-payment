@@ -52,13 +52,10 @@
 * PHP version **7.2** or greater, **php_openssl** module
 * MySQL version **5.5** or greater
 
-## 自動安裝
-1. 登入至您的 WordPress dashboard，拜訪 "Plugins menu" 並點擊 "Add"。
-2. 在"search field"中輸入"MYPay Payment for WooCommerce"，然後點擊搜尋。
-3. 點擊 "安裝" 即可進行安裝。
-
 ## 手動安裝
-詳細說明請參閱 [高鉅科技金流外掛套件安裝導引文件](https://github.com/jyyan/woocommerce-mypay-payment/blob/master/DOC/mypay-woocommerce-payment-gateway-install.md) , [PDF](https://github.com/jyyan/woocommerce-mypay-payment/blob/master/DOC/mypay-woocommerce-payment-gateway-install.pdf)
+1. 請至 [Release](https://github.com/jyyan/woocommerce-mypay-payment/releases) 下載最新版本程式封裝 (woocommerce-mypay-payment_[VERSION].zip 壓縮檔)
+2. 無須解壓縮，直接將壓縮檔於『外掛管理』上傳安裝
+3. 詳細說明請參閱 [高鉅科技金流外掛套件安裝導引文件](https://github.com/jyyan/woocommerce-mypay-payment/blob/master/DOC/mypay-woocommerce-payment-gateway-install.md) , [PDF](https://github.com/jyyan/woocommerce-mypay-payment/blob/master/DOC/mypay-woocommerce-payment-gateway-install.pdf)
 
 ## 參考文件
 1. [PAYPAGE API DOC](https://doc.usecase.cc/Payment/Store/)
