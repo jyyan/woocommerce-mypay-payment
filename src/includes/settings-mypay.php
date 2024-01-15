@@ -47,7 +47,7 @@ return apply_filters('wc_mypay_payment_settings',
       'type' => 'multiselect',
       'description' => __('Press CTRL and the right button on the mouse to select multi payments. NOTICE: option `ALL` was not support `AFTERPAY`', 'mypay'),
       'options' => array(
-        'All' => $this->get_payment_desc('All'),
+        'ALL' => $this->get_payment_desc('All'),
         'CREDITCARD' => $this->get_payment_desc('CREDITCARD'),
         'CSTORECODE' => $this->get_payment_desc('CSTORECODE'),
         'WEBATM' => $this->get_payment_desc('WEBATM'),

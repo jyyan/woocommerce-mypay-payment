@@ -4,7 +4,7 @@ Tags: ecommerce, e-commerce, store, sales, sell, shop, cart, checkout, payment, 
 Requires at least: wordpress 5.3, WooCommerce 3.5
 Tested up to: wordpress 5.5.1, WooCommerce 4.6.1
 Requires PHP: 7.2 or later
-Stable tag: 1.2.20220504
+Stable tag: 1.2.20240115
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -107,3 +107,7 @@ v1.2.20210305
 
 v1.2.20220321
 1. FIX: 於 test mode 模式中，MyPay API 不再支援 DoSuccess 操作
+
+v1.2.20240115
+1. FIX: 重新計算折扣金額
+1. FIX: 單選部份 PFN 無法正確完成交易問題

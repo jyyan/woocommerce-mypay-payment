@@ -152,19 +152,14 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     }
 
     //echo "幣別：". $order_data['currency']. "<br />";
-    $payment['cost'] = $order_data['total']; //總金額
+    $subTotAmt = 0; // 驗算總金額
+    $totalAmt = intval($order_data['total']); // 結帳金額
 
     // FIX: support test mode with DoSuccess
     // $payment['user_id'] = $this->mypay_test_mode === 'no' ? ($email ?? 'guest') : 'DoSuccess';
     // 20220321 FIX: remove DoSuccess
     $payment['user_id'] = $email ?? 'guest';
     $payment['order_id'] = $order_id;
-    // 折扣
-    // echo "折扣金額" . $order_data["discount_total"];
-    $payment['discount'] = $order_data["discount_total"] !== 0 ? "-{$order_data['discount_total']}" : '0';
-    // 運費
-    // echo "運費" . $order_data["shipping_total"];
-    $payment['shipping_fee'] = $order_data["shipping_total"] !== 0 ? $order_data['shipping_total'] : '0';
 
     $payment['user_real_name'] = $name;
     $payment['user_email'] = $email;
@@ -185,7 +180,22 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
       $payment['i_' . $idx_count . '_cost'] = $item_price; //商品單價
       $payment['i_' . $idx_count . '_amount'] = $item_data['quantity'];//商品數量
       $payment['i_' . $idx_count . '_total'] = $item_sub_total;  //商品小計
+      $subTotAmt += $item_sub_total;  // 驗算請款金額
       ++$idx_count;
+    }
+    // 運費
+    // echo "運費" . $order_data["shipping_total"];
+    $payment['shipping_fee'] = $order_data["shipping_total"] !== 0 ? $order_data['shipping_total'] : '0';
+    $subTotAmt += intval($order_data['shipping_total']); // 驗算請款金額 + 運費
+    // 折扣
+    // FIX: #3 重新計算折扣金額
+    // echo "折扣金額" . $order_data["discount_total"];
+    if ($subTotAmt < $totalAmt) {
+      $payment['discount'] = $subTotAmt - $totalAmt; //折扣金額
+      $payment['cost'] = $subTotAmt; // 請款總金額
+    } else {
+      $payment['discount'] = 0; //折扣金額
+      $payment['cost'] = $subTotAmt; // 請款總金額
     }
 
     if ($choose_payment === "AFP") {
@@ -283,11 +293,8 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     //取出支付方式
     $notes = $order->get_customer_order_notes();
     $choose_payment = 'ALL';
-    $choose_installment = '';
     if (isset($notes[0])) {
-      $chooseParam = explode('_', $notes[0]->comment_content);
-      $choose_payment = isset($chooseParam[0]) ? $chooseParam[0] : '';
-      $choose_installment = isset($chooseParam[1]) ? $chooseParam[1] : '';
+      $choose_payment = $notes[0]->comment_content;
     }
     $para = array();
     $para['service_url'] = $service_url;
