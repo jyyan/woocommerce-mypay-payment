@@ -476,6 +476,7 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
     // for 即時交易通知 webhook , 非即時交易通知 webhook
     if (isset($_GET['notify']) && $_GET['notify'] == "order") {
       //mypay 背景通知所在
+      /*
       $ip = $this->get_client_ip();
       if ($this->mypay_test_mode == 'yes') {
       } else {
@@ -486,6 +487,7 @@ class WC_Gateway_Mypay extends WC_Payment_Gateway
           exit;
         }
       }
+      */
       $res_json = json_encode($_POST);
       if (isset($_POST['order_id'])) {
         $order = wc_get_order($_POST['order_id']);

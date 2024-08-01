@@ -1,18 +1,18 @@
 <?php
 /**
- * @copyright Copyright (c) 2016 Wisdtek FinTech Service Co., Ltd. (https://www.mypay.com.tw)
+ * @copyright Copyright (c) 2016 Wistek Technology Co.,Ltd. (https://www.mypay.com.tw)
  * @version 1.2
  *
  * Plugin Name: WooCommerce MYPay Payment
  * Plugin URI: https://www.mypay.com.tw
  * Description: MYPay Integration Payment Gateway for WooCommerce
- * Version: 1.2.20240115.2
+ * Version: 1.2.20240801.1
  * Requires at least: 5.3
  * Requires PHP:      7.2
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       woocomerce-mypay-payment
- * Author: MYPay Wisdtek FinTech Service Co., Ltd.
+ * Author: Wistek Technology Co.,Ltd.
  * Author URI: https://www.mypay.com.tw
  *
  * @class       Mypay_Payment

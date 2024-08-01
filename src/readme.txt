@@ -112,3 +112,6 @@ v1.2.20240115.2
 1. FIX: 重新計算折扣金額、其他交易費用
 1. FIX: 單選部份 PFN 無法正確完成交易問題
 1. ADD: 金流交易資訊記錄於訂單備註資訊中
+
+v1.2.20240801.1
+1. FIX: host check issue in internal network environment
